@@ -7,8 +7,8 @@ import 'package:flutter/material.dart';
 
 //<String, Widget Function(BuildContext)> Siempre es necesario para colocar routes en main.dart
 final Map<String, Widget Function(BuildContext)> appRoutes = {
-  'users': (_) => const UsersPage(),
-  'chat': (_) => const ChatPage(),
+  'users': (_) => UsersPage(key: UniqueKey()),
+  'chat': (_) => const ChatPage(key: ValueKey('chat_page')),
   'login': (_) => const LoginPage(),
   'register': (_) => const RegisterPage(),
   'loading': (_) => const LoadingPage(),
