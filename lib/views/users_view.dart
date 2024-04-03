@@ -1,6 +1,6 @@
 import 'package:chat_app/models/user.dart';
 import 'package:flutter/material.dart';
-import 'package:pull_to_refresh_notification/pull_to_refresh_notification.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class UsersPage extends StatefulWidget {
   const UsersPage({required Key key}) : super(key: key);
@@ -10,9 +10,6 @@ class UsersPage extends StatefulWidget {
 }
 
 class _UsersPageState extends State<UsersPage> {
-  RefreshController _refreshController =
-      RefreshController(initialRefresh: false);
-
   final users = [
     User(uid: '1', name: 'Maria', email: 'test1@test.com', online: true),
     User(uid: '2', name: 'Jose', email: 'test2@test.com', online: false),
@@ -43,9 +40,9 @@ class _UsersPageState extends State<UsersPage> {
           )
         ],
       ),
-      body: PullToRefreshNotification(
+      body: SmartRefresher(
         onRefresh: _uploadUsers,
-        controller: _refreshController,
+        controller: RefreshController(),
         child: ListView.separated(
           physics: const BouncingScrollPhysics(),
           itemBuilder: (_, i) => _userListTile(users[i]),
@@ -57,26 +54,27 @@ class _UsersPageState extends State<UsersPage> {
   }
 
   Future<bool> _uploadUsers() async {
-    await Future.delayed(const Duration(milliseconds: 1000));
-    _refreshController.refreshCompleted();
+    await Future.delayed(const Duration(milliseconds: 500));
+    RefreshController().refreshCompleted();
     return true; // Indicate that the refresh operation was successful
   }
 
   ListTile _userListTile(User user) {
     return ListTile(
-        title: Text(user.name),
-        subtitle: Text(user.email),
-        leading: CircleAvatar(
-          backgroundColor: Colors.blue[200],
-          child: Text(user.name.substring(0, 2)),
+      title: Text(user.name),
+      subtitle: Text(user.email),
+      leading: CircleAvatar(
+        backgroundColor: Colors.blue[200],
+        child: Text(user.name.substring(0, 2)),
+      ),
+      trailing: Container(
+        width: 10,
+        height: 10,
+        decoration: BoxDecoration(
+          color: user.online ? Colors.green[300] : Colors.red[600],
+          borderRadius: BorderRadius.circular(100),
         ),
-        trailing: Container(
-          width: 10,
-          height: 10,
-          decoration: BoxDecoration(
-            color: user.online ? Colors.green[300] : Colors.red[600],
-            borderRadius: BorderRadius.circular(100),
-          ),
-        ));
+      ),
+    );
   }
 }
