@@ -1,8 +1,11 @@
+import 'package:chat_app/helpers/show_alert.dart';
+import 'package:chat_app/services/auth_services.dart';
 import 'package:chat_app/widgets/blue_button.dart';
 import 'package:chat_app/widgets/custom_input.dart';
 import 'package:chat_app/widgets/labels.dart';
 import 'package:chat_app/widgets/logo.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -51,6 +54,8 @@ class _FormState extends State<_Form> {
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
+
     return Column(children: [
       CustomInput(
         icon: Icons.mail_lock_outlined,
@@ -66,7 +71,22 @@ class _FormState extends State<_Form> {
         isPassword: true,
         keyboardType: TextInputType.text,
       ),
-      BlueButton(text: 'LogIn', onPressed: () {})
+      BlueButton(
+        text: 'LogIn',
+        onPressed: authService.authenticate
+            ? null
+            : () async {
+                FocusScope.of(context).unfocus();
+                final loginOk = await authService.login(
+                    emailCtrl.text.trim(), passCtrl.text.trim());
+                if (loginOk) {
+                  // Aquí puedes realizar alguna acción después de hacer login
+                } else {
+                  showAlert(
+                      context, 'Incorrect Login', 'Check your credentials');
+                }
+              },
+      )
     ]);
   }
 }
